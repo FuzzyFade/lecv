@@ -112,10 +112,10 @@ export const funcCollectPlugin = (
       walker(root, ({ name, value }) => {
         if (p === name || p === '') {
           if (isFunction(value)) {
-            const { name, params } = getFunction(value)
-            const calcValue = getCalc(name, params.map(v => getParam(theme, v)))
+            const { name: funcName, params } = getFunction(value)
+            const calcValue = getCalc(funcName, params.map(v => getParam(theme, v)))
 
-            funcVarMap[theme][value] = calcValue
+            funcVarMap[theme][name] = calcValue
             variable = calcValue
           } else {
             variable = value
