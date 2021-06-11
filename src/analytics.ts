@@ -1,26 +1,5 @@
-import type { TransformCallback, Root } from 'postcss'
-
-// TODO: 目前只能做到取一个函数的名字和参数，对于嵌套情况无效...
-const getFunction = (str: string) => {
-  const list = str.replace(/\s+/g, "").match(/[^(|,|)]+/g)
-
-  return {
-    name: list[0],
-    params: list.slice(1)
-  }
-}
-
-const isFunction = (str: string) => {
-  const regA = /^[A-Za-z0-9_-]+[\(][\s\S]+[\)]$/g
-  const regB = /^[A-Za-z0-9_-]+[\(][\)]$/g
-
-  return regA.test(str) || regB.test(str)
-}
-
-interface INode {
-  name: string,
-  value: string
-}
+import type { TransformCallback } from 'postcss'
+import { getFunction, isFunction, walker } from './helper'
 
 /**
  * 函数分析工具
@@ -44,34 +23,6 @@ export const funcCollectPlugin = (
     funcVarMap[theme] = {}
   })
 
-  const getNode = (node: any): INode => {
-    const result = {
-      name: '',
-      value: ''
-    }
-    if (type === 'less') {
-      const str = node.name
-      result.name = str.slice(0, str.length - 1)
-      result.value = node.params
-    }
-    if (type === 'sass') {
-      const str = node.prop;
-      result.name = str.slice(1);
-      result.value = node.value
-    }
-
-    return result
-  }
-
-  const walker = (root: Root, cb: (data: INode) => void) => {
-    if (type === 'less') {
-      return root.walkAtRules(e => cb(getNode(e)))
-    }
-    if (type === 'sass') {
-      return root.walkDecls(e => cb(getNode(e)))
-    }
-  }
-
   return root => {
     const getDepthVar = (p: string) => {
       if (p[0] !== varFlag) return false
@@ -81,7 +32,7 @@ export const funcCollectPlugin = (
       if (depthVarSet.has(p)) return true
 
       let isExist = false
-      walker(root, ({ name, value }) => {
+      walker(type, root, ({ name, value }) => {
         if (p === name || p === '') {
           if (isFunction(value)) {
             const { params } = getFunction(value)
@@ -109,7 +60,7 @@ export const funcCollectPlugin = (
       if (data[theme]?.[p]) return data[theme][p]
 
       let variable = ''
-      walker(root, ({ name, value }) => {
+      walker(type, root, ({ name, value }) => {
         if (p === name || p === '') {
           if (isFunction(value)) {
             const { name: funcName, params } = getFunction(value)
