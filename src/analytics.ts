@@ -48,10 +48,10 @@ export const funcCollectPlugin = (
 
     const getParam = (theme: string, p: string) => {
       // 参数为函数
-      if (isFunction(p)) {
-        const funcData = getFunction(p)
-        return getCalc(funcData.name, funcData.params.map(v => getParam(theme, v)))
-      }
+      // if (isFunction(p)) {
+      //   const funcData = getFunction(p)
+      //   return getCalc(funcData.name, funcData.params.map(v => getParam(theme, v)))
+      // }
       // 参数不为变量，到这里是参数为常数
       if (p[0] !== varFlag) return p
 
@@ -76,8 +76,10 @@ export const funcCollectPlugin = (
       return variable
     }
 
+    // get depthVarSet
     getDepthVar(varFlag)
 
+    // get funcVarMap
     themes.forEach(theme => {
       getParam(theme, varFlag)
     })

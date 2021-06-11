@@ -41,7 +41,7 @@ export const isFunction = (str: string) => {
   return regA.test(str) || regB.test(str)
 }
 
-// 重新封装后的 postcss 遍历函数
+// 重新封装后的 postcss 遍历函数 (sync)
 export const walker = (type: string, root: Root, cb: (data: INode) => void) => {
   return root[config[type].walker](e => cb(getNode(type, e)))
 }
