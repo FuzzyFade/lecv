@@ -21,6 +21,50 @@ $darken-color: lighten($result-title-font-fuzzy, 20%);
 }
 ```
 
+## 函数与变量依赖关系分析
+
+主题数据
+```js
+{
+  default: { 
+    'result-title-font-size': '24px' 
+  }, 
+  dark: { 
+    'result-title-font-size': '20px' 
+  }
+}
 ```
 
+分析后的数据
+```js
+{
+  default: {
+    'result-title-font-size': '24px',
+    'result-title-font-fuzzy': '24px10%', // 由于还没完成计算能力，所以先纯 ++
+    'darken-color': '24px10%20%'
+  },
+  dark: {
+    'result-title-font-size': '20px',
+    'result-title-font-fuzzy': '20px10%',
+    'darken-color': '20px10%20%'
+  }
+}
 ```
+
+## 变量转化能力
+
+```js
+/**
+ * 将 less/sass variable 转化为 css variable
+ * 
+ * Less eg:  @color-bg: #fff; -> @color-bg: var(--color-bg, ${default});
+ * 
+ * Sass eg:  $color-bg: #fff; -> $color-bg: var(--color-bg, ${default});
+ */
+```
+
+## TODO
+- [x] 变量依赖分析能力
+- [] 优化分析函数性能
+- [] 样式函数计算能力
+- [] 发 npm 并提高通用性
