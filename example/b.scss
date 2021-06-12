@@ -1,8 +1,9 @@
 $result-title-font-size: #2e2e2e;
-$result-zzz: 10%;
+$result-zzz: rgb(255, 23, 255);
 $result-title-font: lighten($result-zzz, 10%);
-$result-title-font-fuzzy: lighten($result-title-font-size, $result-zzz);
+$result-title-font-fuzzy: lighten($result-title-font-size,10%);
 $darken-color: lighten($result-title-font-fuzzy, 20%);
+$test-mixin: multiply($result-title-font, $result-title-font-fuzzy);
 
 // darken-color 预先计算出来，并作为主题变量维护
 // 会直接注入到 themeData 里

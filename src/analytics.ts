@@ -1,7 +1,6 @@
 import type { TransformCallback } from 'postcss'
 import { getFunction, isFunction, walker } from './helper'
 import less from 'less'
-import Color from 'color'
 
 /**
  * 函数分析工具
@@ -96,7 +95,6 @@ export const funcCollectPlugin = (
   }
 }
 
-// TODO: 目前暂时只有关于颜色数值的过滤能力
 const filterParams = (params: string[]) => {
   return params.map(p => {
     switch (true) {
@@ -104,10 +102,10 @@ const filterParams = (params: string[]) => {
         return less.color(p.slice(1))
       case p[p.length - 1] === '%':
         return less.value(p.slice(0, p.length - 1))
-      case /^(rgb|rgba|hsl)/.test(p):
-        return less.color(Color(p).array())
-      default:
+      case Number.isNaN(p):
         return less.value(p)
+      default:
+        return Number(p)
     }
   })
 }

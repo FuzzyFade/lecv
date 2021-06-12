@@ -1,5 +1,7 @@
 @result-title-font-size: #2e2e2e;
-@darken-color: lighten(@result-title-font-size, 20%);
+@primary-color: 20%;
+@result-title-font-color: lighten(@result-title-font-size, 10%);
+@darken-color: lighten(@result-title-font-color, @primary-color);
 
 // darken-color 预先计算出来，并作为主题变量维护
 // 会直接注入到 themeData 里
