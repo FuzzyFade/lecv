@@ -96,6 +96,7 @@ export const funcCollectPlugin = (
   }
 }
 
+// TODO: 目前暂时只有关于颜色数值的过滤能力
 const filterParams = (params: string[]) => {
   return params.map(p => {
     switch (true) {
@@ -104,14 +105,13 @@ const filterParams = (params: string[]) => {
       case p[p.length - 1] === '%':
         return less.value(p.slice(0, p.length - 1))
       case /^(rgb|rgba|hsl)/.test(p):
-        return Color(p).array()
+        return less.color(Color(p).array())
       default:
         return less.value(p)
     }
   })
 }
 
-// TODO: '这个就需要翻 api 了...'
 const getCalc = (funcName: string, params: string[]): string => {
   const func = less.functions.functionRegistry.get(funcName)
   if (func) {
