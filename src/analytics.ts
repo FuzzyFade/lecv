@@ -1,5 +1,7 @@
 import type { TransformCallback } from 'postcss'
 import { getFunction, isFunction, walker } from './helper'
+import less from 'less'
+import Color from 'color'
 
 /**
  * 函数分析工具
@@ -94,10 +96,26 @@ export const funcCollectPlugin = (
   }
 }
 
+const filterParams = (params: string[]) => {
+  return params.map(p => {
+    switch (true) {
+      case p[0] === '#':
+        return less.color(p.slice(1))
+      case p[p.length - 1] === '%':
+        return less.value(p.slice(0, p.length - 1))
+      case /^(rgb|rgba|hsl)/.test(p):
+        return Color(p).array()
+      default:
+        return less.value(p)
+    }
+  })
+}
+
 // TODO: '这个就需要翻 api 了...'
 const getCalc = (funcName: string, params: string[]): string => {
-  if (funcName === 'lighten') {
-    return params.reduce((acc, cur) => acc + cur, '')
+  const func = less.functions.functionRegistry.get(funcName)
+  if (func) {
+    return func(...filterParams(params)).toCSS()
   }
   return ''
 }
