@@ -65,7 +65,7 @@ $darken-color: lighten($result-title-font-fuzzy, 20%);
 
 ## TODO
 - [x] 变量依赖分析能力
-- [ ] 优化解析函数性能
-- [ ] 收集 import 并遍历 import 的文件
+- [x] 优化解析函数性能
 - [x] 样式函数计算能力
+- [ ] 提供 sass 函数支持
 - [ ] 发 npm 并提高通用性

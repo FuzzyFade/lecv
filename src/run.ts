@@ -2,19 +2,19 @@ import postcss from 'postCSS'
 import * as path from 'path'
 import * as fs from 'fs'
 import * as pSa from 'postcss-scss'
+import * as lsa from 'postcss-less'
 import { funcCollectPlugin } from './analytics'
 import less from 'less'
 
-const p = path.join(__dirname, '../example', 'b.scss')
+const p = path.join(__dirname, '../example', 'a.less')
 const source = fs.readFileSync(p, 'utf8')
 
-const a = { parser: pSa } as any
+const a = { parser: lsa } as any
 
 const data = { default: { 'result-title-font-size': '#eee' }, dark: { 'result-title-font-size': '#111' } }
 
-
 postcss([
-  funcCollectPlugin(data, 'sass'),
+  funcCollectPlugin(data, 'less'),
 ]).process(source, a).css
 
 // const css = postcss([

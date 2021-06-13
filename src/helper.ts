@@ -10,7 +10,7 @@ const config = {
     walker: 'walkAtRules',
     node: {
       name: 'name',
-      nameGetter: (str: string) => str.slice(0, str.length - 1),
+      nameGetter: (str: string) => str,
       value: 'params',
     }
   },
@@ -42,8 +42,33 @@ export const isFunction = (str: string) => {
 }
 
 // 重新封装后的 postcss 遍历函数 (sync)
-export const walker = (type: string, root: Root, cb: (data: INode) => void) => {
+const walker = (type: string, root: Root, cb: (data: INode) => void) => {
   return root[config[type].walker](e => cb(getNode(type, e)))
+}
+
+export const walkerSome = (type: string, root: Root, cb: (data: INode) => boolean) => {
+  let result = false
+  walker(type, root, e => {
+    const value = cb(e)
+    if (value === true) {
+      result = true
+      // break
+      return false
+    }
+  })
+  return result
+}
+
+export const walkerFind = <T>(type: string, root: Root, cb: (data: INode) => T) => {
+  let result: T = undefined
+  walker(type, root, e => {
+    const value = cb(e)
+    if (value) {
+      result = value
+      return false
+    }
+  })
+  return result
 }
 
 const getNode = (type: string, node: any): INode => {

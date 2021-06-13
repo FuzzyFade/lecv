@@ -1,5 +1,5 @@
 import type { TransformCallback } from 'postcss'
-import { getFunction, isFunction, walker } from './helper'
+import { getFunction, isFunction, walkerSome, walkerFind } from './helper'
 import less from 'less'
 
 /**
@@ -12,7 +12,7 @@ import less from 'less'
  */
 export const funcCollectPlugin = (
   data: Record<string, Record<string, string>>,
-  type: 'sass' | 'less' = 'less'
+  type: 'sass' | 'less' = 'less',
 ): TransformCallback => {
   const themes: string[] = Object.entries(data).map(([key]) => key)
   const varFlag = type === 'less' ? '@' : '$'
@@ -32,19 +32,19 @@ export const funcCollectPlugin = (
       // 没有存在于 cache 中
       if (depthVarSet.has(p)) return true
 
-      let isExist = false
-      walker(type, root, ({ name, value }) => {
+      return walkerSome(type, root, ({ name, value }) => {
         if (p === name || p === '') {
           if (isFunction(value)) {
             const { params } = getFunction(value)
-            isExist = params.some(getDepthVar)
-            if (isExist) {
+            if (params.some(getDepthVar)) {
               depthVarSet.add(name)
+
+              // break
+              if (p === name) return true
             }
           }
         }
       })
-      return isExist
     }
 
     const getParam = (theme: string, p: string) => {
@@ -60,21 +60,23 @@ export const funcCollectPlugin = (
       p = p.slice(1) // 剔除 less/sass 变量前缀
       if (data[theme]?.[p]) return data[theme][p]
 
-      let variable = ''
-      walker(type, root, ({ name, value }) => {
+      return walkerFind(type, root, ({ name, value }) => {
         if (p === name || p === '') {
+          let result: string | undefined
           if (isFunction(value)) {
             const { name: funcName, params } = getFunction(value)
             const calcValue = getCalc(funcName, params.map(v => getParam(theme, v)))
 
             funcVarMap[theme][name] = calcValue
-            variable = calcValue
+            result = calcValue
           } else {
-            variable = value
+            result = value
           }
+
+          // continue
+          if (p === name) return result
         }
       })
-      return variable
     }
 
     // get depthVarSet
