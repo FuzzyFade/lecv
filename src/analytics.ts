@@ -74,7 +74,10 @@ export const funcCollectPlugin = (
           }
 
           // continue
-          if (p === name) return result
+          if (p === '') return
+
+          // break
+          return result
         }
       })
     }
