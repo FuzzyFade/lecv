@@ -35,10 +35,8 @@ export const getFunction = (str: string) => {
 }
 
 export const isFunction = (str: string) => {
-  const regA = /^[A-Za-z0-9_-]+[\(][\s\S]+[\)]$/g
-  const regB = /^[A-Za-z0-9_-]+[\(][\)]$/g
-
-  return regA.test(str) || regB.test(str)
+  const reg = /^[A-Za-z_]+[A-Za-z0-9_-]*[\(][\s\S]*[\)]$/g
+  return reg.test(str)
 }
 
 // 重新封装后的 postcss 遍历函数 (sync)
